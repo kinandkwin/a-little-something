@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #fff3ec;
+    --paper: #fffdf9;
+    --ink: #3a1f33;
+    --ink-soft: #6e5368;
+    --coral: #e8604c;
+    --butter: #f4c04a;
+    --lilac: #a996e0;
+    --line: rgba(58,31,51,0.14);
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Be Vietnam Pro", sans-serif;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  canvas#confetti{
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 20;
+  }
+  .wrap{ max-width: 620px; margin: 0 auto; padding: 0 24px 100px; }
+
+  /* Hero */
+  .hero{ text-align: center; padding: 64px 0 40px; }
+  .eyebrow{ font-size: 13px; font-style: italic; color: var(--ink-soft); margin: 0 0 14px; }
+  h1{
+    font-family: "Fraunces", serif; font-weight: 600;
+    font-size: clamp(42px, 11vw, 70px); line-height: 1.04; margin: 0; color: var(--ink);
+  }
+  h1 em{ font-style: italic; color: var(--coral); display: block; }
+  .cake{ width: 210px; height: auto; margin: 30px auto 6px; display: block; overflow: visible; }
+  .flame{ transform-origin: 50% 100%; animation: flicker 1.1s ease-in-out infinite; transform-box: fill-box; }
+  .cake.out .flame{ animation: none; opacity: 0; transition: opacity .25s; }
+  .smoke{ opacity: 0; }
+  .cake.out .smoke{ animation: smoke 1.6s ease-out forwards; }
+  @keyframes flicker{
+    0%,100%{ transform: scale(1,1) rotate(-2deg); }
+    50%{ transform: scale(.92,1.08) rotate(2deg); }
+  }
+  @keyframes smoke{
+    0%{ opacity: .6; transform: translateY(0); }
+    100%{ opacity: 0; transform: translateY(-22px); }
+  }
+  .wish-btn{
+    font: inherit; font-weight: 600; font-size: 15.5px;
+    background: var(--coral); color: #fff; border: 0; border-radius: 999px;
+    padding: 14px 28px; cursor: pointer; margin-top: 18px;
+    box-shadow: 0 3px 0 #b9422f; transition: transform .12s, box-shadow .12s;
+  }
+  .wish-btn:hover{ transform: translateY(-1px); }
+  .wish-btn:active{ transform: translateY(2px); box-shadow: 0 1px 0 #b9422f; }
+  .wish-btn:focus-visible{ outline: 3px solid var(--lilac); outline-offset: 3px; }
+  .wish-btn[hidden]{ display:none; }
+
+  /* Letter */
+  .letter{
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 40px 34px 36px; margin-top: 30px; position: relative;
+    transform: rotate(-.4deg);
+    animation: rise .8s ease-out both;
+  }
+  .letter[hidden]{ display: none; }
+  .letter::before{
+    content:""; position:absolute; top:-12px; left: 50%; width: 90px; height: 24px;
+    transform: translateX(-50%) rotate(-2deg); background: rgba(244,192,74,.55);
+  }
+  .letter h2{ font-family: "Fraunces", serif; font-weight: 600; font-size: 28px; margin: 0 0 20px; }
+  .letter p{ margin: 0 0 16px; font-size: 16px; }
+  .tip{
+    margin: 22px 0; padding: 14px 18px; font-size: 15px; color: var(--ink-soft);
+    background: rgba(169,150,224,.14); border-left: 3px solid var(--lilac);
+  }
+  .tip strong{ color: var(--ink); }
+  .sign{ font-family: "Caveat", cursive; font-size: 30px; color: var(--coral); margin: 26px 0 0 !important; line-height: 1.2; }
+  @keyframes rise{ from{ opacity:0; transform: translateY(14px) rotate(-.4deg);} to{ opacity:1; transform: translateY(0) rotate(-.4deg);} }
+
+  /* Music */
+  .music-btn{
+    position: fixed; right: 20px; bottom: 20px; z-index: 10; width: 52px; height: 52px;
+    border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(58,31,51,.14);
+  }
+  .music-btn:focus-visible{ outline: 2px solid var(--coral); outline-offset: 3px; }
+  .music-btn[hidden]{ display: none; }
+  .bars{ display:flex; align-items:flex-end; gap:2px; height:16px; }
+  .bars span{ display:block; width:3px; height:5px; background: currentColor; border-radius:1px; }
+  .music-btn.playing .bars span{ animation: bar .9s ease-in-out infinite; }
+  .music-btn.playing .bars span:nth-child(2){ animation-delay:.15s; }
+  .music-btn.playing .bars span:nth-child(3){ animation-delay:.3s; }
+  @keyframes bar{ 0%,100%{height:5px;} 50%{height:15px;} }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 480px){ .letter{ padding: 32px 22px 30px; } }
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="eyebrow">a little something, just for you</p>
+    <h1>Happy Birthday<span id="comma"></span><em id="name">to you!</em></h1>
+
+    <svg class="cake" id="cake" viewBox="0 0 220 200" aria-hidden="true">
+      <!-- candle -->
+      <rect x="106" y="46" width="8" height="34" rx="2" fill="#f4c04a"/>
+      <path d="M106 56l8 4M106 66l8 4" stroke="#fff3ec" stroke-width="2"/>
+      <path class="flame" d="M110 20c7 9 8 15 0 24-8-9-7-15 0-24z" fill="#e8604c"/>
+      <path class="flame" d="M110 28c3.5 5 4 8 0 13-4-5-3.5-8 0-13z" fill="#f4c04a"/>
+      <g class="smoke" stroke="#6e5368" stroke-width="2" fill="none" stroke-linecap="round">
+        <path d="M110 40c-4-6 4-10 0-16"/>
+      </g>
+      <!-- top tier -->
+      <rect x="62" y="80" width="96" height="42" rx="8" fill="#fff" stroke="#3a1f33" stroke-width="2"/>
+      <path d="M62 92c12 10 20-2 32 6s22-4 32 4 22-6 32 2v-12H62z" fill="#e8604c" opacity=".9"/>
+      <!-- bottom tier -->
+      <rect x="32" y="122" width="156" height="56" rx="10" fill="#a996e0" stroke="#3a1f33" stroke-width="2"/>
+      <circle cx="62" cy="150" r="4" fill="#fff3ec"/><circle cx="92" cy="140" r="4" fill="#f4c04a"/>
+      <circle cx="124" cy="152" r="4" fill="#fff3ec"/><circle cx="156" cy="142" r="4" fill="#f4c04a"/>
+      <!-- plate -->
+      <path d="M18 178h184" stroke="#3a1f33" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+
+    <button class="wish-btn" id="wishBtn" type="button">Make a wish &amp; blow out the candle 🎂</button>
+  </section>
+
+  <article class="letter" id="letter" hidden>
+    <p>Happy Birthday to one of the most wonderful people in my life! ❤️🎂</p>
+
+    <p>This year is extra special because you're celebrating not just another year of life, but a beautiful new chapter filled with so much love.</p>
+
+    <p>Seeing you become a mother makes me so happy and proud of you. I hope you never forget how amazing, strong, and beautiful you are, not just as a mom, but as the person you've always been.</p>
+
+    <p>You deserve all the happiness in the world, all the love your heart can hold, and all the beautiful little moments that make life worth living.</p>
+
+    <p>I hope this new chapter brings you endless laughter, precious memories, peaceful days, and dreams coming true. And even though life may get busier and things may change, I hope you know that I'll always be cheering for you.</p>
+
+    <p>Happy Birthday again! You are so loved, and I hope life is always gentle and kind to you. ❤️🥹</p>
+  </article>
+</div>
+
+<button id="musicBtn" class="music-btn" type="button" aria-pressed="false" aria-label="Play background music" hidden>
+  <span class="bars"><span></span><span></span><span></span></span>
+</button>
+<div style="position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+  <iframe id="ytPlayer" width="1" height="1" title="background music" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+</div>
+
+<script>
+  // ---- Edit these ----
+  var HER_NAME = "";              // e.g. "Gấu" (leave empty to show "Happy Birthday to you!")
+  var YT_VIDEO_ID = "";           // e.g. "MGgr9dfMjY4" (leave empty to hide the music button)
+  // --------------------
+
+  if (HER_NAME){
+    document.getElementById('comma').textContent = ",";
+    document.getElementById('name').textContent = HER_NAME + "!";
+  }
+  
+  // Confetti
+  var canvas = document.getElementById('confetti'), ctx = canvas.getContext('2d'), pieces = [], raf;
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  var colors = ['#e8604c','#f4c04a','#a996e0','#3a1f33','#ffb59f'];
+  function burst(){
+    for (var i = 0; i < 140; i++){
+      pieces.push({
+        x: innerWidth/2, y: innerHeight*0.35,
+        vx: (Math.random()-.5)*14, vy: Math.random()*-12-3,
+        s: Math.random()*7+4, r: Math.random()*6, vr: (Math.random()-.5)*.3,
+        c: colors[Math.floor(Math.random()*colors.length)], life: 0
+      });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces = pieces.filter(function(p){ return p.y < canvas.height + 20 && p.life < 260; });
+    pieces.forEach(function(p){
+      p.vy += .28; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life++;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.c; ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); ctx.restore();
+    });
+    raf = pieces.length ? requestAnimationFrame(tick) : null;
+  }
+
+  // Blow out candle
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('wishBtn').addEventListener('click', function(){
+    document.getElementById('cake').classList.add('out');
+    this.hidden = true;
+    if (!reduce) burst();
+    var letter = document.getElementById('letter');
+    letter.hidden = false;
+    setTimeout(function(){ letter.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }, 500);
+  });
+
+  // Music
+  if (YT_VIDEO_ID){
+    var btn = document.getElementById('musicBtn'), player = document.getElementById('ytPlayer'), playing = false;
+    player.src = "https://www.youtube.com/embed/" + YT_VIDEO_ID + "?enablejsapi=1&autoplay=0&controls=0&loop=1&playlist=" + YT_VIDEO_ID;
+    btn.hidden = false;
+    btn.addEventListener('click', function(){
+      player.contentWindow.postMessage(JSON.stringify({event:'command', func: playing ? 'pauseVideo' : 'playVideo', args:[]}), '*');
+      playing = !playing;
+      btn.classList.toggle('playing', playing);
+      btn.setAttribute('aria-pressed', playing);
+      btn.setAttribute('aria-label', playing ? 'Pause background music' : 'Play background music');
+    });
+  }
+</script>
+</body>
+</html>
